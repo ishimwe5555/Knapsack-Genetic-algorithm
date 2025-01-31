@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetic Algorithms Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-5">Genetic Algorithms Demonstration</h1>
+        
+        <div class="row">
+            <!-- TSP Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Traveling Salesman Problem</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="tspCanvas" width="400" height="400"></canvas>
+                        <div class="mt-3">
+                            <button id="addCityBtn" class="btn btn-primary">Add City</button>
+                            <button id="clearCitiesBtn" class="btn btn-secondary">Clear Cities</button>
+                            <button id="solveTspBtn" class="btn btn-success">Solve TSP</button>
+                        </div>
+                        <div class="mt-3">
+                            <label for="tspGenerations">Generations:</label>
+                            <input type="number" id="tspGenerations" value="100" min="1" class="form-control">
+                        </div>
+                        <div id="tspResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knapsack Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Knapsack Problem</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="maxWeight">Maximum Weight:</label>
+                            <input type="number" id="maxWeight" value="50" min="1" class="form-control">
+                        </div>
+                        <div id="itemsList" class="mb-3">
+                            <h4>Items:</h4>
+                            <div id="itemsContainer"></div>
+                            <button id="addItemBtn" class="btn btn-primary mt-2">Add Item</button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="knapsackGenerations">Generations:</label>
+                            <input type="number" id="knapsackGenerations" value="100" min="1" class="form-control">
+                        </div>
+                        <button id="solveKnapsackBtn" class="btn btn-success">Solve Knapsack</button>
+                        <div id="knapsackResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
