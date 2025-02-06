@@ -30,6 +30,23 @@
                             <input type="number" id="tspGenerations" value="100" min="1" class="form-control">
                         </div>
                         <div id="tspResult" class="mt-3"></div>
+                        <div id="tspComparison" class="mt-3">
+                            <h4>Algorithm Comparison</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Algorithm</th>
+                                            <th>Distance</th>
+                                            <th>Time (seconds)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comparisonTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="accuracyResult" class="alert alert-info mt-3" style="display: none;"></div>
+                        </div>
                     </div>
                 </div>
             </div>

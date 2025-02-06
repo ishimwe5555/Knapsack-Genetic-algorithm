@@ -2,6 +2,8 @@ from flask import Flask, render_template, jsonify, request
 import numpy as np
 import random
 import json
+import time
+from itertools import permutations
 
 app = Flask(__name__)
 
@@ -58,6 +60,36 @@ def knapsack_crossover(parent1, parent2):
 def index():
     return render_template('index.html')
 
+def calculate_route_distance(route, cities):
+    total_distance = 0
+    for i in range(len(route)):
+        city1 = cities[route[i]]
+        city2 = cities[route[(i + 1) % len(route)]]
+        total_distance += np.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
+    return total_distance
+
+def solve_tsp_brute_force(cities):
+    start_time = time.time()
+    n = len(cities)
+    if n > 10:  # Limit brute force to 10 cities to avoid excessive computation
+        return None, None, None
+    
+    # Generate all possible routes
+    routes = list(permutations(range(n)))
+    
+    # Find the shortest route
+    best_distance = float('inf')
+    best_route = None
+    
+    for route in routes:
+        distance = calculate_route_distance(route, cities)
+        if distance < best_distance:
+            best_distance = distance
+            best_route = list(route)
+    
+    execution_time = time.time() - start_time
+    return best_route, best_distance, execution_time
+
 @app.route('/solve-tsp', methods=['POST'])
 def solve_tsp():
     data = request.get_json()
@@ -65,6 +97,9 @@ def solve_tsp():
     generations = data['generations']
     population_size = 100  
     mutation_rate = 0.01
+    
+    # Solve using Genetic Algorithm
+    ga_start_time = time.time()
     
     population = create_tsp_population(cities, population_size)
     best_route = None
@@ -107,9 +142,27 @@ def solve_tsp():
         
         population = new_population
     
+    ga_execution_time = time.time() - ga_start_time
+    
+    # Solve using Brute Force (if feasible)
+    bf_route, bf_distance, bf_execution_time = solve_tsp_brute_force(cities)
+    
+    # Calculate relative performance compared to brute force
+    performance_ratio = None
+    if bf_distance is not None:
+        # Calculate how much longer/shorter the GA solution is compared to optimal
+        # If ratio > 0, GA solution is worse (longer)
+        # If ratio < 0, GA solution is better (shorter)
+        performance_ratio = ((best_distance - bf_distance) / bf_distance) * 100
+    
     return jsonify({
-        'route': best_route,
-        'distance': best_distance
+        'ga_route': best_route,
+        'ga_distance': best_distance,
+        'ga_execution_time': ga_execution_time,
+        'bf_route': bf_route,
+        'bf_distance': bf_distance,
+        'bf_execution_time': bf_execution_time,
+        'performance_ratio': performance_ratio
     })
 
 @app.route('/solve-knapsack', methods=['POST'])

@@ -123,11 +123,58 @@ document.getElementById('solveTspBtn').addEventListener('click', async () => {
     
     const result = await response.json();
     drawCities();
-    drawRoute(result.route);
+    drawRoute(result.ga_route);
     
-    document.getElementById('tspResult').innerHTML = `
-        <strong>Total Distance:</strong> ${result.distance.toFixed(2)} units
+    // Update comparison table
+    const comparisonTableBody = document.getElementById('comparisonTableBody');
+    comparisonTableBody.innerHTML = `
+        <tr>
+            <td>Genetic Algorithm</td>
+            <td>${result.ga_distance.toFixed(2)} units</td>
+            <td>${result.ga_execution_time.toFixed(3)}s</td>
+        </tr>
     `;
+
+    if (result.bf_distance !== null) {
+        comparisonTableBody.innerHTML += `
+            <tr>
+                <td>Brute Force</td>
+                <td>${result.bf_distance.toFixed(2)} units</td>
+                <td>${result.bf_execution_time.toFixed(3)}s</td>
+            </tr>
+        `;
+    }
+
+    // Show performance comparison if brute force solution is available
+    const accuracyResult = document.getElementById('accuracyResult');
+    if (result.performance_ratio !== null) {
+        accuracyResult.style.display = 'block';
+        const ratio = result.performance_ratio;
+        let qualityMessage;
+        if (Math.abs(ratio) < 0.01) {
+            qualityMessage = 'The Genetic Algorithm found the optimal solution, matching brute force!';
+        } else if (ratio > 0) {
+            qualityMessage = `The Genetic Algorithm solution is ${ratio.toFixed(2)}% longer than the optimal solution.`;
+        } else {
+            qualityMessage = `The Genetic Algorithm solution is ${(-ratio).toFixed(2)}% shorter than the optimal solution (this shouldn't happen with TSP).`;
+        }
+
+        const speedupRatio = result.ga_execution_time / result.bf_execution_time;
+        const timeMessage = `However, GA took ${speedupRatio.toFixed(1)}x longer than brute force (${result.ga_execution_time.toFixed(3)}s vs ${result.bf_execution_time.toFixed(3)}s).<br><br>`;
+        
+        const explainerMessage = `Note: For small problems like this (${cities.length} cities), brute force is very efficient. 
+        GA becomes more valuable when solving larger problems (15+ cities) where brute force becomes impractical 
+        due to factorial growth (e.g., 20 cities would take brute force 2.4 quintillion checks!)`;
+
+        accuracyResult.innerHTML = `
+            <strong>Solution Quality:</strong><br>
+            ${qualityMessage}<br>
+            ${timeMessage}
+            <small>${explainerMessage}</small>
+        `;
+    } else {
+        accuracyResult.style.display = 'none';
+    }
 });
 
 // Knapsack Problem Setup
